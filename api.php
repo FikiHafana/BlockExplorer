@@ -35,6 +35,7 @@ class jsonRPCServer {
                 $response = array (
                     'id' => $request['id'],
                     'result' => NULL,
+                    'request' => $request,
                     'error' => 'unknown method or incorrect parameters '
                 );
             }
@@ -47,7 +48,7 @@ class jsonRPCServer {
         }
         // output the response
         if (!empty($request['id'])) { // notifications don't want response
-            header('content-type: text/javascript');
+            header('content-type: application/json');
             echo json_encode($response);
         }
         // finish
