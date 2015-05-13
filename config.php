@@ -3,7 +3,7 @@
  * Start ProcessBlocks
  * Set The amount of Blocks it will process
  */
-define("PROCESSBLOCKS", 1000);
+define("PROCESSBLOCKS", 500);
 /**
  * End ProcessBlocks
  */
