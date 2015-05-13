@@ -6,7 +6,7 @@ error_reporting(0);
  * Command line :
  *    Windows: php.exe run.php
  *    Linux:   php run.php
- * Version      : 0.1.0
+ * Version      : 0.1.2
  * Last Updated : 5/13/2015
  */
 
@@ -14,7 +14,8 @@ require_once(__DIR__ . '/../inc/jsonrpc.php');
 require_once(__DIR__ . '/../inc/rb.php');
 require_once(__DIR__ . '/../inc/locksystem.php');
 require_once(__DIR__ . '/../config.php');
-define("VERSION","0.1.0");
+define("VERSION", "0.1.2");
+
 /**
  * Class console
  */
@@ -49,6 +50,21 @@ class console
         return $return;
     }
 
+    private static function getVout($txid,$vout,$type)
+    {
+        $wallet               = new jsonRPCClient(HOTWALLET, true);
+        $getRawTransaction    = $wallet->getrawtransaction($txid);
+        $decodeRawTransaction = $wallet->decoderawtransaction($getRawTransaction);
+        if ($type == "addresses") {
+            //echo $decodeRawTransaction['vout'][$vout]["scriptPubKey"]["addresses"][0]."\n";
+            $return = $decodeRawTransaction['vout'][$vout]["scriptPubKey"]["addresses"][0];
+        } else {
+            //echo $decodeRawTransaction['vout'][$vout][$type]."\n";
+            $return = $decodeRawTransaction['vout'][$vout][$type];
+        }
+        return $return;
+    }
+
     /**
      * @param $vin - JSON RPC DATA
      * @return string
@@ -60,6 +76,11 @@ class console
         foreach ($processVin as $nextVin) {
             $findOne        = R::dispense('vin');
             $findOne->txidp = $vin['txid'];
+            $findOne->time  = $vin['time'];
+            if ($nextVin['txid']) {
+                $findOne->address = self::getVout($nextVin['txid'], $nextVin['vout'],"addresses");
+                $findOne->value   = self::getVout($nextVin['txid'], $nextVin['vout'],"value");
+            }
             foreach ($nextVin as $key => $value) {
                 if ($key == "scriptSig") {
                     foreach ($value as $ke => $val) {
@@ -86,6 +107,7 @@ class console
         foreach ($processVout as $nextVout) {
             $findOne        = R::dispense('vout');
             $findOne->txidp = $vout['txid'];
+            $findOne->time  = $vout['time'];
             foreach ($nextVout as $key => $value) {
                 if ($key == "value") {
                     $valueTotal = bcadd($value, $valueTotal, 6);
@@ -200,7 +222,7 @@ class console
                 $blockTen = $block + PROCESSBLOCKS;
                 while ($block < $blockTen) {
                     $block = (int)$block;
-                    echo "Ver: ".VERSION." Date/Time: ".date("F j, Y, g:i:s a") . " BLOCK #: " . $block . "\n";
+                    echo "Ver: " . VERSION . " Date/Time: " . date("F j, Y, g:i:s a") . " BLOCK #: " . $block . "\n";
                     $array['copyBlockToDB'] = self::copyBlockToDB($block);
                     $block                  = $block + 1;
                 }
