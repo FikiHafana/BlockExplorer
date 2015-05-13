@@ -3,6 +3,23 @@ BlockExplorer System for Paycoin or any other CryptoCurrency
 
 ## Setup
 
+### Paycoin.conf file
+
+Locations:
+
+    windows: %AppData%/Paycoin/paycoin.conf
+    linux: ~/.paycoin/paycoin.conf
+    
+Setup Config file to allow connections and process blockchain
+
+    txindex=1
+    rpcuser=your-coind-user
+    rpcpassword=your-coind-password
+    rpcport=coind-server-rpcport
+    rpcallowip=webserverip #user localhost if local
+    detachdb=1
+    debug=1
+
 ### Configuration
 
 In root folder, open `config.php` and set your DB and Coind connection details.
@@ -29,6 +46,3 @@ On a new line, enter:
 `*/5 * * * * /usr/bin/php /path/to/console/run.php`
 
 This will run the cronjob every 5 minutes.
-
-### Windows Scheduler
-
