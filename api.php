@@ -6,7 +6,8 @@
  */
 
 require_once(__DIR__ . '/inc/rb.php');
-require_once(__DIR__ . '/inc/blockchain.php');
+require_once(__DIR__ . '/inc/jsonrpc.php');
+require_once(__DIR__ . '/api/include.php');
 require_once(__DIR__ . '/config.php');
 define("VERSION","0.1.0");
 
