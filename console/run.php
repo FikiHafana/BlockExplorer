@@ -6,7 +6,7 @@ error_reporting(0);
  * Command line :
  *    Windows: php.exe run.php
  *    Linux:   php run.php
- * Version      : 0.1.2
+ * Version      : 0.1.3
  * Last Updated : 5/13/2015
  */
 
@@ -14,7 +14,7 @@ require_once(__DIR__ . '/../inc/jsonrpc.php');
 require_once(__DIR__ . '/../inc/rb.php');
 require_once(__DIR__ . '/../inc/locksystem.php');
 require_once(__DIR__ . '/../config.php');
-define("VERSION", "0.1.2");
+define("VERSION", "0.1.3");
 
 /**
  * Class console
@@ -115,7 +115,7 @@ class console
                 if ($key == "scriptPubKey") {
                     foreach ($value as $ke => $val) {
                         if ($ke == "addresses") {
-                            $findOne->addresses = json_encode($val);
+                            $findOne->address = $val[0];
                         } else {
                             $findOne->$ke = $val;
                         }
