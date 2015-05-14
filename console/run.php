@@ -6,7 +6,7 @@ error_reporting(0);
  * Command line :
  *    Windows: php.exe run.php
  *    Linux:   php run.php
- * Version      : 0.1.3
+ * Version      : 0.1.4
  * Last Updated : 5/13/2015
  */
 
@@ -14,7 +14,7 @@ require_once(__DIR__ . '/../inc/jsonrpc.php');
 require_once(__DIR__ . '/../inc/rb.php');
 require_once(__DIR__ . '/../inc/locksystem.php');
 require_once(__DIR__ . '/../config.php');
-define("VERSION", "0.1.3");
+define("VERSION", "0.1.4");
 
 /**
  * Class console
@@ -50,7 +50,7 @@ class console
         return $return;
     }
 
-    private static function getVout($txid,$vout,$type)
+    private static function getVout($txid, $vout, $type)
     {
         $wallet               = new jsonRPCClient(HOTWALLET, true);
         $getRawTransaction    = $wallet->getrawtransaction($txid);
@@ -78,8 +78,8 @@ class console
             $findOne->txidp = $vin['txid'];
             $findOne->time  = $vin['time'];
             if ($nextVin['txid']) {
-                $findOne->address = self::getVout($nextVin['txid'], $nextVin['vout'],"addresses");
-                $findOne->value   = self::getVout($nextVin['txid'], $nextVin['vout'],"value");
+                $findOne->address = self::getVout($nextVin['txid'], $nextVin['vout'], "addresses");
+                $findOne->value   = self::getVout($nextVin['txid'], $nextVin['vout'], "value");
             }
             foreach ($nextVin as $key => $value) {
                 if ($key == "scriptSig") {
@@ -234,6 +234,20 @@ class console
         $return                 = json_encode($array);
         return $return;
     }
+
+    public static function getpeerinfo()
+    {
+        $wallet      = new jsonRPCClient(HOTWALLET, true);
+        $getPeerInfo = $wallet->getpeerinfo();
+        foreach ($getPeerInfo as $info) {
+            foreach ($info as $key => $value) {
+                $dispense    = R::dispense('peerinfo');
+                    $dispense->$key = $value;
+                R::store($dispense);
+            }
+        }
+        return "peerinfo";
+    }
 }
 
 $locked = locksystem::lock("blockcheck.txt", 15);
@@ -244,6 +258,7 @@ if ($locked['locked'] == "no") {
     } else {
         echo console::processBlocks();
     }
+    $noreturn               = console::getpeerinfo();
     $locked = locksystem::unlock("blockcheck.txt");
 } else {
     echo "Process already running.";
