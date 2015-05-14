@@ -6,7 +6,7 @@ error_reporting(0);
  * Command line :
  *    Windows: php.exe run.php
  *    Linux:   php run.php
- * Version      : 0.1.4
+ * Version      : 0.1.5
  * Last Updated : 5/13/2015
  */
 
@@ -14,7 +14,7 @@ require_once(__DIR__ . '/../inc/jsonrpc.php');
 require_once(__DIR__ . '/../inc/rb.php');
 require_once(__DIR__ . '/../inc/locksystem.php');
 require_once(__DIR__ . '/../config.php');
-define("VERSION", "0.1.4");
+define("VERSION", "0.1.5");
 
 /**
  * Class console
@@ -240,11 +240,14 @@ class console
         $wallet      = new jsonRPCClient(HOTWALLET, true);
         $getPeerInfo = $wallet->getpeerinfo();
         foreach ($getPeerInfo as $info) {
-            foreach ($info as $key => $value) {
-                $dispense       = R::dispense('peerinfo');
-                $dispense->$key = $value;
-                R::store($dispense);
+            $dispense = R::findOne('peerinfo','addr = ?',[$info['addr']]);
+            if (!$dispense) {
+                $dispense = R::dispense('peerinfo');
             }
+            foreach ($info as $key => $value) {
+                $dispense->$key = $value;
+            }
+            R::store($dispense);
         }
         return "peerinfo";
     }
