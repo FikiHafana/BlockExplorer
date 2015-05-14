@@ -241,8 +241,8 @@ class console
         $getPeerInfo = $wallet->getpeerinfo();
         foreach ($getPeerInfo as $info) {
             foreach ($info as $key => $value) {
-                $dispense    = R::dispense('peerinfo');
-                    $dispense->$key = $value;
+                $dispense       = R::dispense('peerinfo');
+                $dispense->$key = $value;
                 R::store($dispense);
             }
         }
@@ -258,8 +258,8 @@ if ($locked['locked'] == "no") {
     } else {
         echo console::processBlocks();
     }
-    $noreturn               = console::getpeerinfo();
-    $locked = locksystem::unlock("blockcheck.txt");
+    $noreturn = console::getpeerinfo();
+    $locked   = locksystem::unlock("blockcheck.txt");
 } else {
     echo "Process already running.";
     die();
