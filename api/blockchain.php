@@ -1,9 +1,8 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: YoshiGaming
- * Date: 5/13/2015
- * Time: 1:10 PM
+ * Crypto Blockchain SQL to Json interface
+ * Version      : 0.1.0
+ * Last Updated : 5/13/2015
  */
 
 /**
@@ -45,14 +44,19 @@ class blockchain
     static public function addressLookup($address, $limit = 10)
     {
         $i       = 0;
-        $findAll = R::findAll('vout', 'addresses LIKE ? order by id desc LIMIT ?, 0', ['%' . $address . '%',$limit]);
-        foreach ($findAll as $findOne) {
-            foreach ($findOne as $key => $value) {
-                $return['data'][$i][$key] = $value;
-            }
-            $i++;
+        $sql     = "
+        (SELECT time,value,'send' as type,txid FROM `vin` WHERE `address` LIKE '" . $address . "')
+        UNION
+        (SELECT time,value,'receive' as type,txidp as txid FROM `vout` WHERE `address` LIKE '" . $address . "')
+        order by time desc LIMIT ".$limit."";
+        $getAll  = R::getAll($sql);
+        foreach ($getAll as $findOne) {
+             foreach ($findOne as $key => $value) {
+                 $return['data'][$i][$key] = $value;
+             }
+             $i++;
         }
-        $return['count']   = count($findAll);
+        $return['count']   = count($getAll);
         $return['address'] = $address;
         $return['limit']   = $limit;
         return $return;
